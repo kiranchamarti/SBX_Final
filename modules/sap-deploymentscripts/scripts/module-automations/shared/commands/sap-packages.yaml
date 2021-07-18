@@ -1,0 +1,51 @@
+---
+schemaVersion: "2.2"
+description: "Install required packages for SAP HANA on SLES"
+mainSteps:
+- action: "aws:runShellScript"
+  name: "Install_packages"
+  inputs:
+    runCommand:
+    - #!/bin/bash
+    - DISTRO=$(hostnamectl | grep "Operating System")
+    - echo "Operating System found is $DISTRO" | tee a $SSM_LOG_FILE
+    - if [[ "$DISTRO" == *"SUSE"* ]]; then
+    -   zypper -n install systemd | tee -a $SSM_LOG_FILE
+    -   zypper -n install gtk2 | tee -a $SSM_LOG_FILE
+    -   zypper -n install libicu | tee -a $SSM_LOG_FILE
+    -   zypper -n install sudo | tee -a $SSM_LOG_FILE
+    -   zypper -n install tcsh | tee -a $SSM_LOG_FILE
+    -   zypper -n install libssh2-1 | tee -a $SSM_LOG_FILE
+    -   zypper -n install autoyast2-installation | tee -a $SSM_LOG_FILE
+    -   zypper -n install yast2-ncurses | tee -a $SSM_LOG_FILE
+    -   zypper -n install cpupower | tee -a $SSM_LOG_FILE
+    -   zypper -n install libgcc_s1 | tee -a $SSM_LOG_FILE
+    -   zypper -n install libstdc++6 | tee -a $SSM_LOG_FILE
+    -   zypper -n install nvme-cli | tee -a $SSM_LOG_FILE
+    -   zypper -n install cloud-netconfig-ec2 | tee -a $SSM_LOG_FILE
+    -   zypper -n install libopenssl1_0_0  | tee -a $SSM_LOG_FILE
+    -   zypper -n install insserv-compat | tee -a $SSM_LOG_FILE
+    -   zypper -n install unrar_wrapper | tee -a $SSM_LOG_FILE
+    -   zypper -n install chrony | tee -a $SSM_LOG_FILE
+    -   zypper -n install net-tools-deprecated | tee -a $SSM_LOG_FILE
+    -   zypper -n install libnuma-devel | tee -a $SSM_LOG_FILE
+    -   zypper -n install gcc | tee -a $SSM_LOG_FILE
+    -   zypper -n install gcc-c++ | tee -a $SSM_LOG_FILE
+    -   zypper -n install libatomic1 | tee -a $SSM_LOG_FILE
+    -  zypper -n install ntp | tee -a $SSM_LOG_FILE
+    -   zypper -n install sapconf | tee -a $SSM_LOG_FILE
+    -   zypper -n install numactl | tee -a $SSM_LOG_FILE
+    -   zypper -n install saptune | tee -a $SSM_LOG_FILE
+    -   zypper -n install patterns-sles-sap_server | tee -a $SSM_LOG_FILE
+    -   zypper remove ulimit > /dev/null | tee -a $SSM_LOG_FILE
+    -   zypper update -y -l | tee -a $SSM_LOG_FILE
+    - else
+    -   echo "Regular Linux OS"
+    -   yum -y install python3 | tee -a ${SSM_LOG_FILE}
+    -   yum -y install unzip compat-sap-c++-9 xfsprogs autofs gcc nvme-cli | tee -a ${SSM_LOG_FILE}
+    -   yum -y install tuned-profiles-sap-hana sapconf libatomic libnsl uuidd tcsh bind-utils psmisc expect graphviz iptraf-ng | tee -a ${SSM_LOG_FILE}
+    -   yum -y install krb5-workstation libatomic libcanberra-gtk2 libibverbs libicu libpng12 libssh2 lm_sensors | tee -a ${SSM_LOG_FILE}
+    -   yum -y install numactl PackageKit-gtk3-module xorg-x11-xauth libaio libtool-ltdl lvm2 nfs-utils sysstat kernel | tee -a ${SSM_LOG_FILE}
+    -   yum -y group install Server  | tee -a ${SSM_LOG_FILE}
+    -   yum -y update
+    - fi
